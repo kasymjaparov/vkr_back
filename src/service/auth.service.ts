@@ -2,9 +2,10 @@ import * as bcrypt from "bcrypt"
 import { getRepository } from "typeorm"
 import { User } from "../entity/User"
 import generateJwt from "../utils/generateJwt"
-import { IUserProfile } from "../interface/auth.interface"
+import { IJwtUser, IUserProfile } from "../interface/auth.interface"
 import ApiError from "../utils/exceptions"
 import * as jwt from "jsonwebtoken"
+import { v4 as uuidv4 } from 'uuid'
 
 class AuthService {
     async registration(body: IUserProfile) {
@@ -37,7 +38,7 @@ class AuthService {
             if (!comparePassword) {
                 throw ApiError.ClientError("Указан неверный пароль")
             }
-            const token = generateJwt(user.id, user.email, user.role, user.name, user.surname, user.patronymic, user.phone, user.uuid)
+            const token = generateJwt(user.id, user.email, user.role, user.name, user.surname, user.patronymic, user.phone, user.signature)
             return { token }
         } catch (error) {
             throw ApiError.Forbidden(error.message)
@@ -51,7 +52,6 @@ class AuthService {
             delete foundUser.password
             return foundUser
         } catch (error) {
-            console.log(error)
             throw ApiError.Forbidden("Ошибка при получении роли")
         }
     }
@@ -66,19 +66,17 @@ class AuthService {
             await userRepository.save(foundUser)
             return foundUser
         } catch (error) {
-            console.log(error)
             throw ApiError.ClientError("Ошибка при изменении данных пользователя")
         }
     }
-    async createSignature() {
+    async createSignature(user: IJwtUser) {
         try {
             const userRepository = getRepository(User)
             const foundUser = await userRepository.findOne({ email: user.email })
-            foundUser.uuid = "dsadasdsa"
+            foundUser.signature = uuidv4()
             await userRepository.save(foundUser)
-            return foundUser
+            return "Вы успешно дали согласие на  подпись"
         } catch (error) {
-            console.log(error)
             throw ApiError.ClientError("Ошибка при изменении данных пользователя")
         }
     }

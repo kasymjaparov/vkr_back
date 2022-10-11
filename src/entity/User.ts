@@ -25,7 +25,7 @@ export class User extends BaseEntity {
   phone: string;
 
   @Column({ nullable: true })
-  uuid: string;
+  signature: string;
 
   @Column({ nullable: false })
   role!: Roles;

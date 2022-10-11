@@ -23,7 +23,6 @@ const checkRole = (roles: Roles[]) => {
       req.user = decoded
       next()
     } catch (e) {
-      console.log(e.message)
       res.status(401).json({ message: "Ошибка при авторизации" })
     }
   }

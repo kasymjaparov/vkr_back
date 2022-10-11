@@ -23,7 +23,8 @@
     "nodemon": "^2.0.18",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.10",
-    "typeorm": "0.2.32"
+    "typeorm": "0.2.32",
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "start": "ts-node src/index.ts",
@@ -35,5 +36,7 @@
     "generate-dry": "ts-node ./node_modules/typeorm/cli.js migration:generate -n migration -p --dr",
     "make-migration": "npx typeorm migration:create -n migrationName"
   },
-  "engines":{"node":"14.17.1"}
+  "engines": {
+    "node": "14.17.1"
+  }
 }

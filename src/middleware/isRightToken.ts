@@ -8,7 +8,6 @@ interface MyRequest extends Request {
 export default function isRightToken() {
     return function (req: MyRequest, res: Response, next: NextFunction) {
         const token = req.headers.authorization
-        console.log(token)
         jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
             if (error) {
                 if (error.message.includes("jwt expired")) {

@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import { User } from "../entity/User"
+import { IJwtUser } from "../interface/auth.interface"
 import authService from "../service/auth.service"
-
+interface MyRequest extends Request {
+    user: IJwtUser
+}
 class AuthController {
     async registration(req: Request, res: Response, next: NextFunction) {
         try {
@@ -13,7 +16,6 @@ class AuthController {
             const message = await authService.registration(request)
             return res.json(message)
         } catch (error) {
-            console.log(error)
             res.status(404).json({ message: error.message })
         }
     }
@@ -27,7 +29,6 @@ class AuthController {
             const token = await authService.login(request)
             return res.json(token)
         } catch (error) {
-            console.log(error)
             res.status(404).json({ message: error.message })
         }
     }
@@ -51,13 +52,11 @@ class AuthController {
             res.status(505).json({ message: error.message })
         }
     }
-    async createSignature(req: Request, res: Response, next: NextFunction) {
+    async createSignature(req: MyRequest, res: Response, next: NextFunction) {
         try {
-            const token = req.headers.authorization
-            const { name, surname, patronymic, phone } = req.body
-            const candidate = await authService.getProfileInfo(token)
-            const user = await authService.changeUserInfo(candidate as User, name, surname, patronymic, phone)
-            return res.json(user)
+            const candidate = req.user
+            const message = await authService.createSignature(candidate)
+            return res.json({ message })
         } catch (error) {
             res.status(505).json({ message: error.message })
         }
