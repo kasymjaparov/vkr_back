@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, BaseEntity, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinTable, BaseEntity, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
 import Roles from '../enum/Roles.enum'
+import { Measurement } from './Measurement';
+import { Order } from './Order';
 
 @Entity()
 export class User extends BaseEntity {
@@ -29,5 +31,20 @@ export class User extends BaseEntity {
 
   @Column({ nullable: false })
   role!: Roles;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @ManyToMany(() => Order)
+  @JoinTable()
+  orders: Order[]
+
+
+  //Measurement
+  @OneToMany(() => Measurement, (measurement) => measurement.measure, { cascade: true, })
+  measurements: Measurement[]
 
 }
