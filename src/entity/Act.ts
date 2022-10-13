@@ -8,7 +8,6 @@ export class Act extends BaseEntity {
     @Column({ nullable: true, default: "" })
     contract: string;
 
-
     @Column({ nullable: true })
     client: string;
 

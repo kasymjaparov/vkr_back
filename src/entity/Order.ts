@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, BaseEntity, OneToMany, JoinColumn, AfterInsert, getConnection, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, BaseEntity, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Act } from './Act';
 import { flatSeries, repairType } from "../interface/order.interface"
 import { User } from './User';
@@ -72,10 +72,8 @@ export class Order extends BaseEntity {
     @OneToMany(() => Sample, (sample) => sample.order)
     samples: Sample[]
 
-    @AfterInsert()
-    public async createAct() {
-        const act = new Act()
-        await getConnection().manager.save(act);
-        this.act = act
-    }
+    @ManyToMany(type => User, user => user.orders)
+    @JoinTable()
+    users: User[];
+
 }
