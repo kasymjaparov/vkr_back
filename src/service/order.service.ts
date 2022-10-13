@@ -24,7 +24,7 @@ class OrderService {
             order.address = body.address
             order.amount_room = body.amount_room
             order.series = body.series
-            order.user = candidate
+            // order.user = candidate
             await orderRepository.save(order)
             candidate.orders = [order]
             await userRepository.save(candidate)

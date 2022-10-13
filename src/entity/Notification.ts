@@ -1,20 +1,21 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne } from 'typeorm';
 import { Order } from './Order';
+import { User } from './User';
 
 @Entity()
-export class Order_Room extends BaseEntity {
+export class Notification extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({ nullable: true })
-    name!: string;
+    title: string;
 
     @Column({ nullable: true })
     description: string;
 
-    @ManyToOne(() => Order, (order) => order.order_rooms, {
-        onDelete: "CASCADE"
-    })
-    order: Order
+    @Column({ nullable: true, default: false })
+    watchced: boolean;
 
+    @ManyToOne(() => User, (user) => user.notifications)
+    user: User
 }

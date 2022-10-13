@@ -9,10 +9,6 @@ export class Measurement extends BaseEntity {
     @Column({ nullable: false })
     link!: string;
 
-
-    @Column({ nullable: true })
-    client: string;
-
     @Column({ nullable: true, default: "" })
     come_datetime: string;
 
@@ -27,7 +23,4 @@ export class Measurement extends BaseEntity {
 
     @UpdateDateColumn()
     updated_at: Date;
-
-    @ManyToOne(() => User, (measure) => measure.measurements)
-    measure: User
 }

@@ -18,6 +18,10 @@ export class Design extends BaseEntity {
     @Column({ nullable: true })
     description: string;
 
+    
+    @Column({ nullable: true })
+    description_client: string;
+
     @Column({ nullable: true, default: false })
     approved: boolean;
 

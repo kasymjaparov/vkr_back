@@ -1,21 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, BaseEntity, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import Roles from '../enum/Roles.enum'
 import { Order } from './Order';
+import { Stage_Image } from './Stage_Image';
 
 @Entity()
-export class Approval extends BaseEntity {
+export class Check extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({ nullable: true })
-    doc!: string;
-
-    @Column({ nullable: true })
-    description_client: string;
+    link: string;
 
     @Column({ nullable: true, default: false })
     approved: string;
 
-    @ManyToOne(() => Order, (order) => order.approvals)
+    @ManyToOne(() => Order, (order) => order.checks)
     order: Order
 }

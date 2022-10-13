@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinTable, BaseEntity, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToMany } from 'typeorm';
 import Roles from '../enum/Roles.enum'
-import { Measurement } from './Measurement';
+import { Notification } from './Notification';
 import { Order } from './Order';
 
 @Entity()
@@ -38,13 +38,11 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[]
+
   @ManyToMany(() => Order)
   @JoinTable()
   orders: Order[]
-
-
-  //Measurement
-  @OneToMany(() => Measurement, (measurement) => measurement.measure, { cascade: true, })
-  measurements: Measurement[]
 
 }

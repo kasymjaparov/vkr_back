@@ -8,6 +8,7 @@ import { Measurement } from './Measurement';
 import { Approval } from './Approval';
 import { Stage } from './Stage';
 import { Sample } from './Sample';
+import { Check } from './Check';
 
 @Entity()
 export class Order extends BaseEntity {
@@ -21,10 +22,13 @@ export class Order extends BaseEntity {
     series!: flatSeries;
 
     @Column({ nullable: false })
-    amount_room: number;
+    amount_room!: number;
 
     @Column({ nullable: true })
     type: repairType;
+
+    @Column({ nullable: true })
+    status: string;
 
     @Column({ nullable: true })
     contract: string;
@@ -50,11 +54,6 @@ export class Order extends BaseEntity {
     @JoinColumn()
     measurement: Measurement
 
-    @ManyToOne(() => User, (user) => user.orders, {
-        onDelete: "CASCADE"
-    })
-    user: User
-
     @OneToMany(() => Order_Image, (order_image) => order_image.order)
     order_images: Order_Image[]
 
@@ -67,14 +66,15 @@ export class Order extends BaseEntity {
     @OneToMany(() => Order_Room, (order_room) => order_room.order)
     order_rooms: Order_Room[]
 
+    @OneToMany(() => Check, (check) => check.order)
+    checks: Check[]
+
     @OneToMany(() => Sample, (sample) => sample.order)
     samples: Sample[]
-
 
     @AfterInsert()
     public async createAct() {
         const act = new Act()
-        act.contract = "act"
         await getConnection().manager.save(act);
         this.act = act
     }
