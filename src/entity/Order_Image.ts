@@ -7,8 +7,8 @@ export class Order_Image extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: false })
-    link!: string;
+    @Column({ nullable: true })
+    link: string;
 
     @ManyToOne(() => Order, (order) => order.order_images, {
         onDelete: "CASCADE"

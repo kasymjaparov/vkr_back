@@ -1,18 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, BaseEntity, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
-import Roles from '../enum/Roles.enum'
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne } from 'typeorm';
 import { Order } from './Order';
-import { Stage_Image } from './Stage_Image';
 
 @Entity()
 export class Check extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
     link: string;
 
     @Column({ nullable: true, default: false })
-    approved: string;
+    approved: boolean;
 
     @ManyToOne(() => Order, (order) => order.checks)
     order: Order

@@ -1,16 +1,13 @@
-import * as bcrypt from "bcrypt"
-import { getRepository } from "typeorm"
+import { getConnection, getRepository } from "typeorm"
 import { User } from "../entity/User"
-import generateJwt from "../utils/generateJwt"
-import { IJwtUser, IUserProfile } from "../interface/auth.interface"
+import { IJwtUser } from "../interface/auth.interface"
 import ApiError from "../utils/exceptions"
-import * as jwt from "jsonwebtoken"
-import { v4 as uuidv4 } from 'uuid'
 import { Order } from "../entity/Order"
 import { flatSeries } from "../interface/order.interface"
 import { Act } from "../entity/Act"
 import { Order_Room } from "../entity/Order_Room"
-import { decryptRole } from "../utils/decryptRole"
+import cloudinary from "../utils/cloudinary"
+import { Order_Image } from "../entity/Order_Image"
 
 export interface ICreateReq {
     address: string,
@@ -22,31 +19,46 @@ export interface ICreateReq {
 class OrderService {
     async create(body: ICreateReq, user: IJwtUser) {
         try {
-            // const userRepository = getRepository(User)
-            // const orderRepository = getRepository(Order)
-            // const actRepository = getRepository(Act)
-            // const orderRoomRepository = getRepository(Order_Room)
-            // const orderRooms: Order_Room[] = []
-            // body.rooms.forEach(async (item) => {
-            //     const orderRoom = await orderRoomRepository.create({ name: item.name, description: item.description }).save()
-            //     orderRooms.push(orderRoom)
-            // })
-            // const candidate = await userRepository.findOne({ email: user.email })
-            // const order = new Order()
-            // order.address = body.address
-            // order.amount_room = body.amount_room
-            // order.series = body.series
-            // order.order_rooms = orderRooms
-            // order.users = [candidate]
-            // const act = await actRepository.create({}).save()
-            // order.act = act
-            // await orderRepository.save(order)
-            // candidate.orders = [order]
-            // await userRepository.save(candidate)
-            console.log(body)
+            await getConnection().transaction(async transactionalEntityManager => {
+                const order_images: Order_Image[] = []
+                const orderRooms: Order_Room[] = []
+                const userRepository = getRepository(User)
+                const orderRepository = getRepository(Order)
+                const actRepository = getRepository(Act)
+                const orderRoomRepository = getRepository(Order_Room)
+                const orderImageRepository = getRepository(Order_Image)
+                const candidate = await userRepository.findOne({ email: user.email })
+                const order = new Order()
+                order.address = body.address
+                order.amount_room = body.amount_room
+                order.series = body.series
+                body.rooms.forEach(async (item) => {
+                    const orderRoom = new Order_Room()
+                    orderRoom.description = item.description
+                    orderRoom.name = item.name
+                    await orderRoomRepository.save(orderRoom)
+                    orderRooms.push(orderRoom)
+                })
+                order.order_rooms = orderRooms
+                order.users = [candidate]
+                const act = await actRepository.create({}).save()
+                order.act = act
+                candidate.orders = [order]
+                body.images.forEach(async (item) => {
+                    const orderImage = new Order_Image()
+                    const { url } = await cloudinary.uploader.upload(item.path, { folder: "images" })
+                    orderImage.link = url || "None"
+                    orderImage.order = order
+                    await orderImageRepository.save(orderImage)
+                    order_images.push(orderImage)
+                })
+                order.order_images = order_images
+                await userRepository.save(candidate)
+                await orderRepository.save(order)
+            })
             return { message: "Заявка успешно подана" }
         } catch (error) {
-            throw ApiError.Forbidden(error.message)
+            throw ApiError.ClientError(error.message)
         }
     }
     async getAll() {

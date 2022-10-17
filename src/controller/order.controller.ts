@@ -8,14 +8,13 @@ interface MyRequest extends Request {
 class OrderController {
     async create(req: MyRequest, res: Response, next: NextFunction) {
         try {
-            console.log(req.body)
             const user = req.user
             const request: ICreateReq = {
                 address: req.body.address,
                 series: req.body.series,
                 amount_room: req.body.amount_room,
-                rooms: req.body.rooms,
-                images: req.body.images
+                rooms: JSON.parse(req.body.rooms),
+                images: req.files
             }
             const message = await orderService.create(request, user)
             return res.json(message)

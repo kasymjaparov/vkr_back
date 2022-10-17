@@ -6,6 +6,8 @@ const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require('body-parser');
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 require("dotenv").config();
 
 const PORT = process.env.PORT || 5000;

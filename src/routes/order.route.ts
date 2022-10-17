@@ -9,7 +9,7 @@ var multer = require('multer');
 var upload = multer({ dest: 'upload/' });
 
 const OrderRouter = Router();
-OrderRouter.post('/create', upload.single('recfile'), checkRole([Roles.CLIENT]), orderController.create);
+OrderRouter.post('/create', upload.array("files"), checkRole([Roles.CLIENT]), orderController.create);
 OrderRouter.get('/getAll', checkRole([Roles.CLIENT]), orderController.getAll);
 
 
