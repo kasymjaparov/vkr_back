@@ -8,7 +8,8 @@ import { Act } from "../entity/Act"
 import { Order_Room } from "../entity/Order_Room"
 import cloudinary from "../utils/cloudinary"
 import { Order_Image } from "../entity/Order_Image"
-
+import * as path from 'path'
+import * as rimraf from "rimraf"
 export interface ICreateReq {
     address: string,
     series: flatSeries,
@@ -52,12 +53,19 @@ class OrderService {
                     await orderImageRepository.save(orderImage)
                     order_images.push(orderImage)
                 })
+                rimraf(path.basename("../../uploads"), (err) => {
+                    if (err) {
+                        return console.log("error occurred in deleting directory", err);
+                    }
+                    console.log("tmp folder Deleted!");
+                })
                 order.order_images = order_images
                 await userRepository.save(candidate)
                 await orderRepository.save(order)
             })
             return { message: "Заявка успешно подана" }
         } catch (error) {
+            console.log(error.message)
             throw ApiError.ClientError(error.message)
         }
     }

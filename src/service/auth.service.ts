@@ -55,7 +55,7 @@ class AuthService {
             throw ApiError.Forbidden("Ошибка при получении роли")
         }
     }
-    async changeUserInfo(user: User, name: string, surname: string, patronymic: string = "", phone: string) {
+    async changeUserInfo(user: User, name: string, surname: string, patronymic: string = "", phone: string, sign: boolean = false) {
         try {
             const userRepository = getRepository(User)
             const foundUser = await userRepository.findOne({ email: user.email })
@@ -63,19 +63,12 @@ class AuthService {
             foundUser.surname = surname
             foundUser.patronymic = patronymic
             foundUser.phone = phone
+            console.log(sign)
+            if (sign) {
+                foundUser.signature = uuidv4()
+            }
             await userRepository.save(foundUser)
-            return foundUser
-        } catch (error) {
-            throw ApiError.ClientError("Ошибка при изменении данных пользователя")
-        }
-    }
-    async createSignature(user: IJwtUser) {
-        try {
-            const userRepository = getRepository(User)
-            const foundUser = await userRepository.findOne({ email: user.email })
-            foundUser.signature = uuidv4()
-            await userRepository.save(foundUser)
-            return "Вы успешно дали согласие на  подпись"
+            return "Ваши данные успешно изменены"
         } catch (error) {
             throw ApiError.ClientError("Ошибка при изменении данных пользователя")
         }

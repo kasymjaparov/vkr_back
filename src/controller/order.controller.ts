@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { User } from "../entity/User"
+import { body } from "express-validator"
 import { IJwtUser } from "../interface/auth.interface"
 import orderService, { ICreateReq } from "../service/order.service"
 interface MyRequest extends Request {
@@ -19,6 +19,7 @@ class OrderController {
             const message = await orderService.create(request, user)
             return res.json(message)
         } catch (error) {
+            console.log(error.message)
             res.status(404).json({ message: error.message })
         }
     }

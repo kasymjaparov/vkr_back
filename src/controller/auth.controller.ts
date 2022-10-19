@@ -44,18 +44,9 @@ class AuthController {
     async changeUserInfo(req: Request, res: Response, next: NextFunction) {
         try {
             const token = req.headers.authorization
-            const { name, surname, patronymic, phone } = req.body
+            const { name, surname, patronymic, phone, sign } = req.body
             const candidate = await authService.getProfileInfo(token)
-            const user = await authService.changeUserInfo(candidate as User, name, surname, patronymic, phone)
-            return res.json(user)
-        } catch (error) {
-            res.status(505).json({ message: error.message })
-        }
-    }
-    async createSignature(req: MyRequest, res: Response, next: NextFunction) {
-        try {
-            const candidate = req.user
-            const message = await authService.createSignature(candidate)
+            const message = await authService.changeUserInfo(candidate as User, name, surname, patronymic, phone, sign)
             return res.json({ message })
         } catch (error) {
             res.status(505).json({ message: error.message })
