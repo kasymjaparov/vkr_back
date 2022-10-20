@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express"
-import { body } from "express-validator"
 import { IJwtUser } from "../interface/auth.interface"
 import orderService, { ICreateReq } from "../service/order.service"
 interface MyRequest extends Request {
@@ -8,6 +7,7 @@ interface MyRequest extends Request {
 class OrderController {
     async create(req: MyRequest, res: Response, next: NextFunction) {
         try {
+            console.log(req.body, req.files)
             const user = req.user
             const request: ICreateReq = {
                 address: req.body.address,
@@ -24,9 +24,19 @@ class OrderController {
         }
     }
 
-    async getAll(req: Request, res: Response, next: NextFunction) {
+    async getAll(req: MyRequest, res: Response, next: NextFunction) {
         try {
             const orders = await orderService.getAll()
+            return res.json(orders)
+        } catch (error) {
+            res.status(404).json({ message: error.message })
+        }
+    }
+
+    async getUserOrders(req: MyRequest, res: Response, next: NextFunction) {
+        try {
+            const user = req.user
+            const orders = await orderService.getUserOrders(user)
             return res.json(orders)
         } catch (error) {
             res.status(404).json({ message: error.message })

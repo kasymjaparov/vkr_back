@@ -176,6 +176,26 @@ var OrderService = /** @class */ (function () {
             });
         });
     };
+    OrderService.prototype.getUserOrders = function (user) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orderRepository, orders, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        orderRepository = typeorm_1.getRepository(Order_1.Order);
+                        return [4 /*yield*/, orderRepository.createQueryBuilder("order").leftJoinAndSelect("order.users", "user").leftJoinAndSelect("order.act", "act").leftJoinAndSelect("order.order_rooms", "order_rooms").leftJoinAndSelect("order.order_images", "order_images").leftJoinAndSelect("order.measurement", "measurement").leftJoinAndSelect("order.checks", "checks").leftJoinAndSelect("order.samples", "samples").leftJoinAndSelect("order.stages", "stages").orderBy("order.id", "DESC").where("user.id=:id", { id: user.id }).getMany()];
+                    case 1:
+                        orders = _a.sent();
+                        return [2 /*return*/, orders];
+                    case 2:
+                        error_3 = _a.sent();
+                        throw exceptions_1["default"].Forbidden(error_3.message);
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return OrderService;
 }());
 exports["default"] = new OrderService();

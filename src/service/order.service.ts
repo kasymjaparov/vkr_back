@@ -33,6 +33,7 @@ class OrderService {
                 order.address = body.address
                 order.amount_room = body.amount_room
                 order.series = body.series
+
                 body.rooms.forEach(async (item) => {
                     const orderRoom = new Order_Room()
                     orderRoom.description = item.description
@@ -87,7 +88,17 @@ class OrderService {
             throw ApiError.Forbidden(error.message)
         }
     }
+    async getUserOrders(user: IJwtUser) {
+        try {
 
+            const orderRepository = getRepository(Order)
+            const orders = await orderRepository.createQueryBuilder("order").leftJoinAndSelect("order.users", "user").leftJoinAndSelect("order.act", "act").leftJoinAndSelect("order.order_rooms", "order_rooms").leftJoinAndSelect("order.order_images", "order_images").leftJoinAndSelect("order.measurement", "measurement").leftJoinAndSelect("order.checks", "checks").leftJoinAndSelect("order.samples", "samples").leftJoinAndSelect("order.stages", "stages").orderBy("order.id", "DESC").where("user.id=:id", { id: user.id }).getMany()
+            return orders
+        } catch (error) {
+
+            throw ApiError.Forbidden(error.message)
+        }
+    }
 }
 
 export default new OrderService()

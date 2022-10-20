@@ -47,6 +47,7 @@ var OrderController = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
+                        console.log(req.body, req.files);
                         user = req.user;
                         request = {
                             address: req.body.address,
@@ -83,6 +84,27 @@ var OrderController = /** @class */ (function () {
                     case 2:
                         error_2 = _a.sent();
                         res.status(404).json({ message: error_2.message });
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    OrderController.prototype.getUserOrders = function (req, res, next) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user, orders, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        user = req.user;
+                        return [4 /*yield*/, order_service_1["default"].getUserOrders(user)];
+                    case 1:
+                        orders = _a.sent();
+                        return [2 /*return*/, res.json(orders)];
+                    case 2:
+                        error_3 = _a.sent();
+                        res.status(404).json({ message: error_3.message });
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }

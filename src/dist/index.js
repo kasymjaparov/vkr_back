@@ -43,14 +43,12 @@ var routes_1 = require("./routes");
 var app = express();
 var cors = require("cors");
 var cookieParser = require("cookie-parser");
-var bodyParser = require('body-parser');
+var bodyParser = require("body-parser");
 require("dotenv").config();
 var PORT = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-var multer = require("multer");
-var upload = multer({ dest: "uploads/" });
 app.use(cors({
     credentials: true
 }));
