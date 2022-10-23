@@ -15,5 +15,6 @@ var Roles;
     Roles[Roles["DDV"] = 2] = "DDV";
     Roles[Roles["BUILDER"] = 3] = "BUILDER";
     Roles[Roles["MEASURE"] = 4] = "MEASURE";
+    Roles[Roles["PM"] = 5] = "PM";
 })(Roles || (Roles = {}));
 exports["default"] = Roles;

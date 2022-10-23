@@ -31,7 +31,23 @@ class OrderController {
             res.status(404).json({ message: error.message })
         }
     }
+    async getById(req: MyRequest, res: Response, next: NextFunction) {
+        try {
 
+            const orders = await orderService.getById(req.params.id)
+            return res.json(orders)
+        } catch (error) {
+            res.status(404).json({ message: error.message })
+        }
+    }
+    async deleteOrder(req: MyRequest, res: Response, next: NextFunction) {
+        try {
+            const response = await orderService.deleteNewOrders(req.params.id)
+            return res.json(response)
+        } catch (error) {
+            res.status(404).json({ message: error.message })
+        }
+    }
     async getUserOrders(req: MyRequest, res: Response, next: NextFunction) {
         try {
             const user = req.user

@@ -12,5 +12,7 @@ enum Roles {
     DDV = 2,
     BUILDER = 3,
     MEASURE = 4,
+    PM = 5,
+
 }
 export default Roles

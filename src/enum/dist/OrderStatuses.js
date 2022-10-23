@@ -5,4 +5,5 @@ var OrderStatuses;
 (function (OrderStatuses) {
     OrderStatuses["NEW"] = "new";
     OrderStatuses["APPROVED"] = "approved";
+    OrderStatuses["DENIED"] = "denied";
 })(OrderStatuses = exports.OrderStatuses || (exports.OrderStatuses = {}));

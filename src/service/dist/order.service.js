@@ -59,7 +59,7 @@ var OrderService = /** @class */ (function () {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, typeorm_1.getConnection().transaction(function (transactionalEntityManager) { return __awaiter(_this, void 0, void 0, function () {
-                                var order_images, orderRooms, userRepository, orderRepository, actRepository, orderRoomRepository, orderImageRepository, candidate, order, act;
+                                var order_images, orderRooms, userRepository, orderRepository, actRepository, orderRoomRepository, orderImageRepository, candidate, newOrders, candidateOrders, order, act;
                                 var _this = this;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
@@ -71,9 +71,22 @@ var OrderService = /** @class */ (function () {
                                             actRepository = typeorm_1.getRepository(Act_1.Act);
                                             orderRoomRepository = typeorm_1.getRepository(Order_Room_1.Order_Room);
                                             orderImageRepository = typeorm_1.getRepository(Order_Image_1.Order_Image);
-                                            return [4 /*yield*/, userRepository.findOne({ email: user.email })];
+                                            return [4 /*yield*/, userRepository.findOne({ where: { email: user.email } })];
                                         case 1:
                                             candidate = _a.sent();
+                                            newOrders = [];
+                                            return [4 /*yield*/, this.getUserOrders(candidate)];
+                                        case 2:
+                                            candidateOrders = _a.sent();
+                                            console.log(candidateOrders);
+                                            candidateOrders.forEach(function (item) {
+                                                if (item.status === "new") {
+                                                    newOrders.push("1");
+                                                }
+                                            });
+                                            if (newOrders.length >= 4) {
+                                                throw new Error("Количество необработанных заказов больше трех");
+                                            }
                                             order = new Order_1.Order();
                                             order.address = body.address;
                                             order.amount_room = body.amount_room;
@@ -98,7 +111,7 @@ var OrderService = /** @class */ (function () {
                                             order.order_rooms = orderRooms;
                                             order.users = [candidate];
                                             return [4 /*yield*/, actRepository.create({}).save()];
-                                        case 2:
+                                        case 3:
                                             act = _a.sent();
                                             order.act = act;
                                             candidate.orders = [order];
@@ -129,10 +142,10 @@ var OrderService = /** @class */ (function () {
                                             });
                                             order.order_images = order_images;
                                             return [4 /*yield*/, userRepository.save(candidate)];
-                                        case 3:
+                                        case 4:
                                             _a.sent();
                                             return [4 /*yield*/, orderRepository.save(order)];
-                                        case 4:
+                                        case 5:
                                             _a.sent();
                                             return [2 /*return*/];
                                     }
@@ -143,7 +156,6 @@ var OrderService = /** @class */ (function () {
                         return [2 /*return*/, { message: "Заявка успешно подана" }];
                     case 2:
                         error_1 = _a.sent();
-                        console.log(error_1.message);
                         throw exceptions_1["default"].ClientError(error_1.message);
                     case 3: return [2 /*return*/];
                 }
@@ -178,9 +190,35 @@ var OrderService = /** @class */ (function () {
             });
         });
     };
+    OrderService.prototype.getById = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orderRepository, order, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        orderRepository = typeorm_1.getRepository(Order_1.Order);
+                        return [4 /*yield*/, orderRepository.findOne(id, {
+                                relations: ["act", "users", "order_rooms", "order_images", "measurement", "checks", "samples", "stages"],
+                                order: { id: "DESC" }
+                            })];
+                    case 1:
+                        order = _a.sent();
+                        order.users.forEach(function (el) {
+                            delete el.password;
+                        });
+                        return [2 /*return*/, order];
+                    case 2:
+                        error_3 = _a.sent();
+                        throw exceptions_1["default"].Forbidden(error_3.message);
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     OrderService.prototype.getUserOrders = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var orderRepository, orders, error_3;
+            var orderRepository, orders, error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -191,8 +229,28 @@ var OrderService = /** @class */ (function () {
                         orders = _a.sent();
                         return [2 /*return*/, orders];
                     case 2:
-                        error_3 = _a.sent();
-                        throw exceptions_1["default"].Forbidden(error_3.message);
+                        error_4 = _a.sent();
+                        throw exceptions_1["default"].Forbidden(error_4.message);
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    OrderService.prototype.deleteNewOrders = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orderRepository, orders, error_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        orderRepository = typeorm_1.getRepository(Order_1.Order);
+                        return [4 /*yield*/, orderRepository["delete"](id)];
+                    case 1:
+                        orders = _a.sent();
+                        return [2 /*return*/, { message: "Заказ удален" }];
+                    case 2:
+                        error_5 = _a.sent();
+                        throw exceptions_1["default"].Forbidden(error_5.message);
                     case 3: return [2 /*return*/];
                 }
             });

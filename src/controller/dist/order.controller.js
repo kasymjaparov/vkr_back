@@ -89,9 +89,49 @@ var OrderController = /** @class */ (function () {
             });
         });
     };
+    OrderController.prototype.getById = function (req, res, next) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orders, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, order_service_1["default"].getById(req.params.id)];
+                    case 1:
+                        orders = _a.sent();
+                        return [2 /*return*/, res.json(orders)];
+                    case 2:
+                        error_3 = _a.sent();
+                        res.status(404).json({ message: error_3.message });
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    OrderController.prototype.deleteOrder = function (req, res, next) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response, error_4;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, order_service_1["default"].deleteNewOrders(req.params.id)];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, res.json(response)];
+                    case 2:
+                        error_4 = _a.sent();
+                        res.status(404).json({ message: error_4.message });
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     OrderController.prototype.getUserOrders = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, orders, error_3;
+            var user, orders, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -102,8 +142,8 @@ var OrderController = /** @class */ (function () {
                         orders = _a.sent();
                         return [2 /*return*/, res.json(orders)];
                     case 2:
-                        error_3 = _a.sent();
-                        res.status(404).json({ message: error_3.message });
+                        error_5 = _a.sent();
+                        res.status(404).json({ message: error_5.message });
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }

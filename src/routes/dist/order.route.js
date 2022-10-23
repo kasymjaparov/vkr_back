@@ -9,4 +9,6 @@ var OrderRouter = express_1.Router();
 OrderRouter.post('/create', fileUploader({ useTempFiles: true }), checkRole_middleware_1["default"]([Roles_enum_1["default"].CLIENT]), order_controller_1["default"].create);
 OrderRouter.get('/getAll', checkRole_middleware_1["default"]([Roles_enum_1["default"].CLIENT]), order_controller_1["default"].getAll);
 OrderRouter.get('/getMyOrders', checkRole_middleware_1["default"]([Roles_enum_1["default"].CLIENT]), order_controller_1["default"].getUserOrders);
+OrderRouter.get('/getById/:id', checkRole_middleware_1["default"]([Roles_enum_1["default"].CLIENT]), order_controller_1["default"].getById);
+OrderRouter["delete"]('/delete/:id', checkRole_middleware_1["default"]([Roles_enum_1["default"].CLIENT, Roles_enum_1["default"].PM]), order_controller_1["default"].deleteOrder);
 exports["default"] = OrderRouter;
