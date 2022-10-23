@@ -7,7 +7,6 @@ interface MyRequest extends Request {
 class OrderController {
     async create(req: MyRequest, res: Response, next: NextFunction) {
         try {
-            console.log(req.body, req.files)
             const user = req.user
             const request: ICreateReq = {
                 address: req.body.address,

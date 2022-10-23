@@ -46,6 +46,7 @@ var cloudinary_1 = require("../utils/cloudinary");
 var Order_Image_1 = require("../entity/Order_Image");
 var path = require("path");
 var rimraf = require("rimraf");
+var OrderStatuses_1 = require("../enum/OrderStatuses");
 var OrderService = /** @class */ (function () {
     function OrderService() {
     }
@@ -77,6 +78,7 @@ var OrderService = /** @class */ (function () {
                                             order.address = body.address;
                                             order.amount_room = body.amount_room;
                                             order.series = body.series;
+                                            order.status = OrderStatuses_1.OrderStatuses.NEW;
                                             body.rooms.forEach(function (item) { return __awaiter(_this, void 0, void 0, function () {
                                                 var orderRoom;
                                                 return __generator(this, function (_a) {
@@ -100,13 +102,13 @@ var OrderService = /** @class */ (function () {
                                             act = _a.sent();
                                             order.act = act;
                                             candidate.orders = [order];
-                                            body.images.forEach(function (item) { return __awaiter(_this, void 0, void 0, function () {
+                                            body.images.images.forEach(function (item) { return __awaiter(_this, void 0, void 0, function () {
                                                 var orderImage, url;
                                                 return __generator(this, function (_a) {
                                                     switch (_a.label) {
                                                         case 0:
                                                             orderImage = new Order_Image_1.Order_Image();
-                                                            return [4 /*yield*/, cloudinary_1["default"].uploader.upload(item.path, { folder: "images" })];
+                                                            return [4 /*yield*/, cloudinary_1["default"].uploader.upload(item.tempFilePath, { folder: "images" })];
                                                         case 1:
                                                             url = (_a.sent()).url;
                                                             orderImage.link = url || "None";
@@ -119,7 +121,7 @@ var OrderService = /** @class */ (function () {
                                                     }
                                                 });
                                             }); });
-                                            rimraf(path.basename("../../uploads"), function (err) {
+                                            rimraf(path.basename("../../tmp"), function (err) {
                                                 if (err) {
                                                     return console.log("error occurred in deleting directory", err);
                                                 }

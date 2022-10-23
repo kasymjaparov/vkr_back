@@ -10,6 +10,7 @@ import cloudinary from "../utils/cloudinary"
 import { Order_Image } from "../entity/Order_Image"
 import * as path from 'path'
 import * as rimraf from "rimraf"
+import { OrderStatuses } from "../enum/OrderStatuses"
 export interface ICreateReq {
     address: string,
     series: flatSeries,
@@ -33,7 +34,7 @@ class OrderService {
                 order.address = body.address
                 order.amount_room = body.amount_room
                 order.series = body.series
-
+                order.status = OrderStatuses.NEW
                 body.rooms.forEach(async (item) => {
                     const orderRoom = new Order_Room()
                     orderRoom.description = item.description
@@ -46,15 +47,15 @@ class OrderService {
                 const act = await actRepository.create({}).save()
                 order.act = act
                 candidate.orders = [order]
-                body.images.forEach(async (item) => {
+                body.images.images.forEach(async (item) => {
                     const orderImage = new Order_Image()
-                    const { url } = await cloudinary.uploader.upload(item.path, { folder: "images" })
+                    const { url } = await cloudinary.uploader.upload(item.tempFilePath, { folder: "images" })
                     orderImage.link = url || "None"
                     orderImage.order = order
                     await orderImageRepository.save(orderImage)
                     order_images.push(orderImage)
                 })
-                rimraf(path.basename("../../uploads"), (err) => {
+                rimraf(path.basename("../../tmp"), (err) => {
                     if (err) {
                         return console.log("error occurred in deleting directory", err);
                     }

@@ -47,7 +47,6 @@ var OrderController = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        console.log(req.body, req.files);
                         user = req.user;
                         request = {
                             address: req.body.address,

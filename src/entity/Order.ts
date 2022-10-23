@@ -36,6 +36,9 @@ export class Order extends BaseEntity {
     @Column({ nullable: true, default: false })
     contract_signed: boolean;
 
+    @Column({ nullable: true, default: "" })
+    denied_reason: string;
+
     @CreateDateColumn()
     created_at: Date;
 
@@ -54,7 +57,10 @@ export class Order extends BaseEntity {
     @JoinColumn()
     measurement: Measurement
 
-    @OneToMany(() => Order_Image, (order_image) => order_image.order)
+    @OneToMany(() => Order_Image, (order_image) => order_image.order, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
     order_images: Order_Image[]
 
     @OneToMany(() => Approval, (approval) => approval.order)
