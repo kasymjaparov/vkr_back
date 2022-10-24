@@ -47,6 +47,7 @@ var OrderController = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
+                        console.log(req.files);
                         user = req.user;
                         request = {
                             address: req.body.address,
@@ -129,9 +130,34 @@ var OrderController = /** @class */ (function () {
             });
         });
     };
+    OrderController.prototype.handleOrder = function (req, res, next) {
+        return __awaiter(this, void 0, void 0, function () {
+            var request, response, error_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        request = {
+                            type: req.body.type,
+                            id: req.body.id,
+                            reason: req.body.reason
+                        };
+                        return [4 /*yield*/, order_service_1["default"].handleOrder(request)];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, res.json(response)];
+                    case 2:
+                        error_5 = _a.sent();
+                        res.status(404).json({ message: error_5.message });
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     OrderController.prototype.getUserOrders = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var user, orders, error_5;
+            var user, orders, error_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -142,8 +168,8 @@ var OrderController = /** @class */ (function () {
                         orders = _a.sent();
                         return [2 /*return*/, res.json(orders)];
                     case 2:
-                        error_5 = _a.sent();
-                        res.status(404).json({ message: error_5.message });
+                        error_6 = _a.sent();
+                        res.status(404).json({ message: error_6.message });
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }

@@ -7,6 +7,7 @@ interface MyRequest extends Request {
 class OrderController {
     async create(req: MyRequest, res: Response, next: NextFunction) {
         try {
+            console.log(req.files)
             const user = req.user
             const request: ICreateReq = {
                 address: req.body.address,
@@ -43,6 +44,19 @@ class OrderController {
     async deleteOrder(req: MyRequest, res: Response, next: NextFunction) {
         try {
             const response = await orderService.deleteNewOrders(req.params.id)
+            return res.json(response)
+        } catch (error) {
+            res.status(404).json({ message: error.message })
+        }
+    }
+    async handleOrder(req: MyRequest, res: Response, next: NextFunction) {
+        try {
+            const request = {
+                type: req.body.type,
+                id: req.body.id,
+                reason: req.body.reason
+            }
+            const response = await orderService.handleOrder(request)
             return res.json(response)
         } catch (error) {
             res.status(404).json({ message: error.message })

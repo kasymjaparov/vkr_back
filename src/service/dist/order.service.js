@@ -78,7 +78,6 @@ var OrderService = /** @class */ (function () {
                                             return [4 /*yield*/, this.getUserOrders(candidate)];
                                         case 2:
                                             candidateOrders = _a.sent();
-                                            console.log(candidateOrders);
                                             candidateOrders.forEach(function (item) {
                                                 if (item.status === "new") {
                                                     newOrders.push("1");
@@ -238,20 +237,58 @@ var OrderService = /** @class */ (function () {
     };
     OrderService.prototype.deleteNewOrders = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var orderRepository, orders, error_5;
+            var orderRepository, candidate, orders, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
+                        _a.trys.push([0, 5, , 6]);
                         orderRepository = typeorm_1.getRepository(Order_1.Order);
-                        return [4 /*yield*/, orderRepository["delete"](id)];
+                        return [4 /*yield*/, orderRepository.findOne(id)];
                     case 1:
+                        candidate = _a.sent();
+                        if (!(candidate.status === "new")) return [3 /*break*/, 3];
+                        return [4 /*yield*/, orderRepository["delete"](id)];
+                    case 2:
                         orders = _a.sent();
                         return [2 /*return*/, { message: "Заказ удален" }];
-                    case 2:
+                    case 3: return [2 /*return*/, { message: "Можно удалить только необработанный заказ" }];
+                    case 4: return [3 /*break*/, 6];
+                    case 5:
                         error_5 = _a.sent();
                         throw exceptions_1["default"].Forbidden(error_5.message);
-                    case 3: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    OrderService.prototype.handleOrder = function (_a) {
+        var type = _a.type, id = _a.id, reason = _a.reason;
+        return __awaiter(this, void 0, void 0, function () {
+            var orderRepository, candidate, error_6;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        console.log(type, id, reason);
+                        orderRepository = typeorm_1.getRepository(Order_1.Order);
+                        return [4 /*yield*/, orderRepository.findOne(id)];
+                    case 1:
+                        candidate = _b.sent();
+                        if (type === "denied") {
+                            candidate.status = OrderStatuses_1.OrderStatuses.DENIED;
+                            candidate.denied_reason = reason;
+                        }
+                        else {
+                            candidate.status = OrderStatuses_1.OrderStatuses.APPROVED;
+                        }
+                        return [4 /*yield*/, orderRepository.save(candidate)];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/, { message: "Заказ обработан" }];
+                    case 3:
+                        error_6 = _b.sent();
+                        throw exceptions_1["default"].Forbidden(error_6.message);
+                    case 4: return [2 /*return*/];
                 }
             });
         });

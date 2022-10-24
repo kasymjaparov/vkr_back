@@ -32,7 +32,6 @@ class OrderService {
                 const candidate = await userRepository.findOne({ where: { email: user.email } })
                 let newOrders: string[] = []
                 const candidateOrders = await this.getUserOrders(candidate)
-                console.log(candidateOrders)
                 candidateOrders.forEach((item) => {
                     if (item.status === "new") {
                         newOrders.push("1")
@@ -131,8 +130,37 @@ class OrderService {
     async deleteNewOrders(id: string) {
         try {
             const orderRepository = getRepository(Order)
-            const orders = await orderRepository.delete(id)
-            return { message: "Заказ удален" }
+            const candidate = await orderRepository.findOne(id)
+            if (candidate.status === "new") {
+                const orders = await orderRepository.delete(id)
+                return { message: "Заказ удален" }
+            }
+            else {
+                return { message: "Можно удалить только необработанный заказ" }
+            }
+
+        } catch (error) {
+            throw ApiError.Forbidden(error.message)
+        }
+    }
+    async handleOrder({ type, id, reason }: {
+        type: string,
+        id: string,
+        reason: string,
+    }) {
+        try {
+            console.log(type, id, reason)
+            const orderRepository = getRepository(Order)
+            const candidate = await orderRepository.findOne(id)
+            if (type === "denied") {
+                candidate.status = OrderStatuses.DENIED
+                candidate.denied_reason = reason
+            }
+            else {
+                candidate.status = OrderStatuses.APPROVED
+            }
+            await orderRepository.save(candidate)
+            return { message: "Заказ обработан" }
         } catch (error) {
             throw ApiError.Forbidden(error.message)
         }

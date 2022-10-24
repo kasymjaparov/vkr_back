@@ -18,6 +18,9 @@ export function decryptRole(role: Roles) {
         case Roles.SUPERADMIN:
             result = "Суперадмин"
             break;
+        case Roles.PM:
+            result = "Пм"
+            break;
         default:
             result = "Клиент"
             break;
