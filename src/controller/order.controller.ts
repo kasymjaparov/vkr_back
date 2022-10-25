@@ -34,7 +34,6 @@ class OrderController {
     }
     async getById(req: MyRequest, res: Response, next: NextFunction) {
         try {
-
             const orders = await orderService.getById(req.params.id)
             return res.json(orders)
         } catch (error) {
@@ -51,10 +50,12 @@ class OrderController {
     }
     async handleOrder(req: MyRequest, res: Response, next: NextFunction) {
         try {
+            const user = req.user
             const request = {
                 type: req.body.type,
                 id: req.body.id,
-                reason: req.body.reason
+                reason: req.body.reason,
+                user
             }
             const response = await orderService.handleOrder(request)
             return res.json(response)

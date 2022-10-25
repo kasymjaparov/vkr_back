@@ -104,13 +104,10 @@ class OrderService {
             const order = await orderRepository.findOne(id, {
                 relations: ["act", "users", "order_rooms", "order_images", "measurement", "checks", "samples", "stages"],
                 order: { id: "DESC" },
-
             })
-
             order.users.forEach((el) => {
                 delete el.password
             })
-
             return order
         } catch (error) {
 
@@ -123,7 +120,6 @@ class OrderService {
             const orders = await orderRepository.createQueryBuilder("order").leftJoinAndSelect("order.users", "user").leftJoinAndSelect("order.act", "act").leftJoinAndSelect("order.order_rooms", "order_rooms").leftJoinAndSelect("order.order_images", "order_images").leftJoinAndSelect("order.measurement", "measurement").leftJoinAndSelect("order.checks", "checks").leftJoinAndSelect("order.samples", "samples").leftJoinAndSelect("order.stages", "stages").orderBy("order.id", "DESC").where("user.id=:id", { id: user.id }).getMany()
             return orders
         } catch (error) {
-
             throw ApiError.Forbidden(error.message)
         }
     }
@@ -143,15 +139,18 @@ class OrderService {
             throw ApiError.Forbidden(error.message)
         }
     }
-    async handleOrder({ type, id, reason }: {
+    async handleOrder({ type, id, reason, user }: {
         type: string,
         id: string,
         reason: string,
+        user: IJwtUser
     }) {
         try {
-            console.log(type, id, reason)
+            const userRepository = getRepository(User)
             const orderRepository = getRepository(Order)
-            const candidate = await orderRepository.findOne(id)
+            const userCandidate = await userRepository.findOne(user.id)
+            const candidate = await orderRepository.findOne(id, { relations: ["users"] })
+            candidate.users.push(userCandidate)
             if (type === "denied") {
                 candidate.status = OrderStatuses.DENIED
                 candidate.denied_reason = reason

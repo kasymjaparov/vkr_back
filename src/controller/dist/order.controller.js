@@ -132,15 +132,17 @@ var OrderController = /** @class */ (function () {
     };
     OrderController.prototype.handleOrder = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var request, response, error_5;
+            var user, request, response, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
+                        user = req.user;
                         request = {
                             type: req.body.type,
                             id: req.body.id,
-                            reason: req.body.reason
+                            reason: req.body.reason,
+                            user: user
                         };
                         return [4 /*yield*/, order_service_1["default"].handleOrder(request)];
                     case 1:
