@@ -11,6 +11,8 @@ import { Order_Image } from "../entity/Order_Image"
 import * as path from 'path'
 import * as rimraf from "rimraf"
 import { OrderStatuses } from "../enum/OrderStatuses"
+import { Notification } from "../entity/Notification"
+import Roles from "../enum/Roles.enum"
 export interface ICreateReq {
     address: string,
     series: flatSeries,
@@ -22,15 +24,20 @@ class OrderService {
     async create(body: ICreateReq, user: IJwtUser) {
         try {
             await getConnection().transaction(async transactionalEntityManager => {
-                const order_images: Order_Image[] = []
-                const orderRooms: Order_Room[] = []
+                let order_images: Order_Image[] = []
+                let orderRooms: Order_Room[] = []
+                let newOrders: string[] = []
                 const userRepository = getRepository(User)
+                const notificationRepository = getRepository(Notification)
+
                 const orderRepository = getRepository(Order)
                 const actRepository = getRepository(Act)
                 const orderRoomRepository = getRepository(Order_Room)
                 const orderImageRepository = getRepository(Order_Image)
                 const candidate = await userRepository.findOne({ where: { email: user.email } })
-                let newOrders: string[] = []
+                const pms = await userRepository.find({ where: { role: Roles.PM }, relations: ["notifications"] })
+                const pmNotification = new Notification()
+                pmNotification.title = "Клиент сделал заказ"
                 const candidateOrders = await this.getUserOrders(candidate)
                 candidateOrders.forEach((item) => {
                     if (item.status === "new") {
@@ -69,9 +76,13 @@ class OrderService {
                     if (err) {
                         return console.log("error occurred in deleting directory", err);
                     }
-                    console.log("tmp folder Deleted!");
                 })
                 order.order_images = order_images
+                await notificationRepository.save(pmNotification)
+                pms.forEach((pm) => {
+                    pm.notifications = [pmNotification]
+                })
+                await userRepository.save(pms)
                 await userRepository.save(candidate)
                 await orderRepository.save(order)
             })
@@ -148,7 +159,10 @@ class OrderService {
         try {
             const userRepository = getRepository(User)
             const orderRepository = getRepository(Order)
-            const userCandidate = await userRepository.findOne(user.id)
+            const notificationRepository = getRepository(Notification)
+            const userCandidate = await userRepository.findOne(user.id, {
+                relations: ["notifications"]
+            })
             const candidate = await orderRepository.findOne(id, { relations: ["users"] })
             candidate.users.push(userCandidate)
             if (type === "denied") {
@@ -158,6 +172,13 @@ class OrderService {
             else {
                 candidate.status = OrderStatuses.APPROVED
             }
+            const notification = new Notification()
+            notification.title = "Менеджер обработал вашу заявку"
+            notification.description = ""
+            await notificationRepository.save(notification)
+            const client = candidate.users.find((client) => client.role === Roles.CLIENT)
+            client.notifications = [notification]
+            await userRepository.save(client)
             await orderRepository.save(candidate)
             return { message: "Заказ обработан" }
         } catch (error) {
